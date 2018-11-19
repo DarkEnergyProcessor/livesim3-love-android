@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
@@ -32,6 +33,7 @@ import android.os.PowerManager;
 import android.os.ResultReceiver;
 import android.os.Vibrator;
 import android.support.annotation.Keep;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
@@ -43,20 +45,49 @@ public class GameActivity extends SDLActivity {
     private static String gamePath = "";
     private static Context context;
     private static Vibrator vibrator = null;
+    protected final int[] externalStorageRequestDummy = new int[1];
+    public static final int EXTERNAL_STORAGE_REQUEST_CODE = 1;
     private static boolean immersiveActive = false;
     private static boolean mustCacheArchive = false;
 
     @Override
     protected String[] getLibraries() {
         return new String[]{
-                "gnustl_shared",
+                "c++_shared",
                 "mpg123",
                 "openal",
+                "hidapi",
                 "love",
         };
     }
-
+    
     protected native void setEnv(String name, String value);
+    
+    private static int DEFAULT_SMP = 256;
+    @Keep
+    public int getAudioSMP()
+    {
+        if (Build.VERSION.SDK_INT >= 17)
+        {
+            AudioManager a = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            int b = Integer.parseInt(a.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER));
+            return b > 0 ? b : DEFAULT_SMP;
+        }
+        else return DEFAULT_SMP;
+    }
+
+    private static int DEFAULT_FREQ = 44100;
+    @Keep
+    public int getAudioFreq()
+    {
+        if (Build.VERSION.SDK_INT >= 17)
+        {
+            AudioManager a = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            int b = Integer.parseInt(a.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE));
+            return b > 0 ? b : DEFAULT_FREQ;
+        }
+        else return DEFAULT_FREQ;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +103,12 @@ public class GameActivity extends SDLActivity {
             Log.d("GameActivity", "Vibration disabled: could not get vibration permission.");
         }
 
-        handleIntent(this.getIntent());
-
-        super.onCreate(savedInstanceState);
         setEnv("LLA_BUFSIZE", String.valueOf(getAudioSMP()));
         setEnv("LLA_FREQUENCY", String.valueOf(getAudioFreq()));
         setEnv("LLA_IS_SET", "1");
+        handleIntent(this.getIntent());
+
+        super.onCreate(savedInstanceState);
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
     }
 
@@ -90,6 +121,8 @@ public class GameActivity extends SDLActivity {
     }
 
     protected void handleIntent(Intent intent) {
+        // Our fork doesn't need to handle this thing
+        /*
         Uri game = intent.getData();
 
         if (game != null) {
@@ -143,16 +176,21 @@ public class GameActivity extends SDLActivity {
                     gamePath = destination_file;
                 else
                     gamePath = "game.love";
-            } else {
-                // If no game.love was found fall back to the game in <external storage>/lovegame
-                File ext = Environment.getExternalStorageDirectory();
-                if ((new File(ext, "/lovegame/main.lua")).exists()) {
-                    gamePath = ext.getPath() + "/lovegame/";
-                }
             }
         }
 
         Log.d("GameActivity", "new gamePath: " + gamePath);
+        */
+    }
+
+    protected void checkLovegameFolder() {
+        // If no game.love was found fall back to the game in <external storage>/lovegame
+        if (hasExternalStoragePermission()) {
+            File ext = Environment.getExternalStorageDirectory();
+            if ((new File(ext, "/lovegame/main.lua")).exists()) {
+                gamePath = ext.getPath() + "/lovegame/";
+            }
+        }
     }
 
     @Override
@@ -233,8 +271,18 @@ public class GameActivity extends SDLActivity {
     }
 
     public static String getGamePath() {
+        GameActivity self = (GameActivity) mSingleton; // use SDL provided one
         Log.d("GameActivity", "called getGamePath(), game path = " + gamePath);
-        return gamePath;
+
+        if (gamePath.length() > 0 && self.hasExternalStoragePermission()) {
+            return gamePath;
+        } else {
+            self.checkLovegameFolder();
+            if (gamePath.length() > 0)
+                return gamePath;
+        }
+
+        return "";
     }
 
     public static DisplayMetrics getMetrics() {
@@ -247,12 +295,18 @@ public class GameActivity extends SDLActivity {
         }
     }
 
-    public static void openURL(String url) {
+    public static boolean openURL(String url) {
         Log.d("GameActivity", "opening url = " + url);
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(url));
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(i);
+        try {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            context.startActivity(i);
+            return true;
+        } catch (RuntimeException e) {
+            Log.d("GameActivity", "love.system.openURL", e);
+            return false;
+        }
     }
 
     /**
@@ -316,30 +370,47 @@ public class GameActivity extends SDLActivity {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         return audioManager.isMusicActive();
     }
+    
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-    private static int DEFAULT_SMP = 256;
-    @Keep
-    public int getAudioSMP()
-    {
-        if (Build.VERSION.SDK_INT >= 17)
-        {
-            AudioManager a = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            int b = Integer.parseInt(a.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER));
-            return b > 0 ? b : DEFAULT_SMP;
+        if (requestCode == EXTERNAL_STORAGE_REQUEST_CODE) {
+            synchronized (externalStorageRequestDummy) {
+                externalStorageRequestDummy[0] = grantResults[0];
+                externalStorageRequestDummy.notify();
+            }
         }
-        else return DEFAULT_SMP;
     }
 
-    private static int DEFAULT_FREQ = 44100;
     @Keep
-    public int getAudioFreq()
-    {
-        if (Build.VERSION.SDK_INT >= 17)
-        {
-            AudioManager a = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            int b = Integer.parseInt(a.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE));
-            return b > 0 ? b : DEFAULT_FREQ;
-        }
-        else return DEFAULT_FREQ;
+    public boolean hasExternalStoragePermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ActivityCompat.requestPermissions(
+                            GameActivity.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            EXTERNAL_STORAGE_REQUEST_CODE
+                        );
+                    }
+                });
+
+                synchronized (externalStorageRequestDummy) {
+                    try {
+                        externalStorageRequestDummy.wait();
+                    } catch (InterruptedException e) {
+                        Log.d("GameActivity", "request external storage permission", e);
+                        return false;
+                    }
+
+                }
+                return ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+            }
+        } else
+            return true;
+        return false;
     }
 }

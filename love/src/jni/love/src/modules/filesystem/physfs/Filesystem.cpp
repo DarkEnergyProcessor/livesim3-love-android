@@ -259,7 +259,7 @@ bool Filesystem::setSource(const char *source)
 			SDL_Log("mounting of %s failed", game_path.c_str());
 			return false;
 		}
-	}
+}
 #else
 	// Add the directory.
 	if (!PHYSFS_mount(new_search_path.c_str(), nullptr, 1))

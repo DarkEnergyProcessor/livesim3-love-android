@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest package="org.love2d.android.executable"
-      android:installLocation="auto" xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <!-- Allow writing to external storage -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    android:installLocation="auto" xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <!-- Allow writing to external storage -->
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <!-- Low latency audio -->
+  <uses-feature android:name="android.hardware.audio.low_latency" android:required="false" />
+  <uses-feature android:name="android.hardware.audio.pro" android:required="false" />
 
   <!-- OpenGL ES 2.0 -->
   <uses-feature android:glEsVersion="0x00020000" />
@@ -17,7 +21,7 @@
       <service android:name="org.love2d.android.DownloadService" />
       <activity
         android:name="org.love2d.android.GameActivity"
-        android:configChanges="orientation|screenSize"
+        android:configChanges="orientation|screenSize|keyboard|keyboardHidden|navigation"
         android:label="LÖVE for Android"
         android:launchMode="singleTop"
         android:screenOrientation="landscape" >

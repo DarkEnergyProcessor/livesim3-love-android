@@ -16,12 +16,11 @@ LOCAL_C_INCLUDES  :=  \
 	${LOCAL_PATH}/src/modules \
 	${LOCAL_PATH}/src/libraries/ \
 	${LOCAL_PATH}/src/libraries/enet/libenet/include \
-	${LOCAL_PATH}/../SDL2-2.0.7/include \
-	${LOCAL_PATH}/../openal-soft-1.17.0/include \
-	${LOCAL_PATH}/../openal-soft-1.17.0/OpenAL32/Include \
-	${LOCAL_PATH}/../freetype2-android/include \
-	${LOCAL_PATH}/../freetype2-android/src \
-	${LOCAL_PATH}/../physfs-3.0.1/src \
+	${LOCAL_PATH}/src/libraries/physfs \
+	${LOCAL_PATH}/src/libraries/glslang/glslang/Include \
+	${LOCAL_PATH}/../SDL2-2.0.9/include \
+	${LOCAL_PATH}/../openal-soft-1.19.1/prebuilt/include \
+	${LOCAL_PATH}/../freetype-2.8.1-prebuilt/include \
 	${LOCAL_PATH}/../mpg123-1.17.0/src/libmpg123 \
 	${LOCAL_PATH}/../libmodplug-0.8.8.4/src \
 	${LOCAL_PATH}/../libvorbis-1.3.5/include \
@@ -89,6 +88,7 @@ LOCAL_SRC_FILES := \
   $(wildcard ${LOCAL_PATH}/src/libraries/luautf8/*.c) \
   $(wildcard ${LOCAL_PATH}/src/libraries/luasocket/libluasocket/*.c) \
   $(wildcard ${LOCAL_PATH}/src/libraries/noise1234/*.cpp) \
+  $(wildcard ${LOCAL_PATH}/src/libraries/physfs/*.c) \
   $(wildcard ${LOCAL_PATH}/src/libraries/Wuff/*.c) \
   $(wildcard ${LOCAL_PATH}/src/libraries/lodepng/*.cpp) \
   $(wildcard ${LOCAL_PATH}/src/libraries/lz4/*.c) \
@@ -98,12 +98,12 @@ LOCAL_CXXFLAGS := -std=c++0x
 
 LOCAL_SHARED_LIBRARIES := libopenal libmpg123 
 
-LOCAL_STATIC_LIBRARIES := libphysfs libvorbis libogg libtheora libmodplug libfreetype libluajit SDL2_static
+LOCAL_STATIC_LIBRARIES := libvorbis libogg libtheora libmodplug libfreetype libluajit SDL2_static
 
 # $(info liblove: include dirs $(LOCAL_C_INCLUDES))
 # $(info liblove: src files $(LOCAL_SRC_FILES))
 
-SDL_PATH := ../SDL2-2.0.7
+SDL_PATH := ../SDL2-2.0.9
 LOCAL_SRC_FILES += $(SDL_PATH)/src/main/android/SDL_android_main.c 
 LOCAL_LDLIBS := -lz -lGLESv1_CM -lGLESv2 -ldl -landroid
 LOCAL_LDFLAGS := -Wl,--allow-multiple-definition

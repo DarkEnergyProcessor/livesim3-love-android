@@ -6,13 +6,13 @@ The changes are as follows:
 
 * Target Android API 26 (required for Play Store submission). Note that `t.externalstorage=true` still work even without runtime permission request.
 
-* Uses modified OpenAL-soft 1.17.0. The changes is also in here, notably at `ALc/backends/opensl.c` to support lower audio latency.
+* Uses modified OpenAL-soft 1.19.1. File changed is `ALc/backends/opensl.c` to support lower audio latency.
 
 * Use LuaJIT 2.1.0-beta3
 
 * Uses PhysFS 3.0.1
 
-* Uses SDL 2.0.7
+* Uses SDL 2.0.9
 
 * Uses LuaSocket 3.0-rc1
 
@@ -20,11 +20,17 @@ The changes are as follows:
 
 * Disable JIT compiler for Lua state created via `love.thread.newThread`
 
-* Mount APK instead of `/sdcard/lovegame` (the latter won't work anyway)
+* Mount APK instead of `/sdcard/lovegame`
 
 LÖVE is licensed under zLib license, and **this is modified version of LOVE 0.10.2**
 
-OpenAL-soft is licensed under LGPL version 2 (or later version of the license), and **this is modified version of OpenAL-soft 1.17.0**
+OpenAL-soft is licensed under LGPL version 2 (or later version of the license), and **this is modified version of OpenAL-soft 1.19.1**
+
+Before start, make sure to clone the LOVE repository. It's now separated
+
+```
+git clone https://github.com/MikuAuahDark/livesim3-love love/src/jni/love
+```
 
 *********************************************
 
