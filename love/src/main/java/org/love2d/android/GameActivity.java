@@ -61,8 +61,6 @@ public class GameActivity extends SDLActivity {
         };
     }
     
-    protected native void setEnv(String name, String value);
-    
     private static int DEFAULT_SMP = 256;
     @Keep
     public int getAudioSMP()
@@ -103,12 +101,14 @@ public class GameActivity extends SDLActivity {
             Log.d("GameActivity", "Vibration disabled: could not get vibration permission.");
         }
 
-        setEnv("LLA_BUFSIZE", String.valueOf(getAudioSMP()));
-        setEnv("LLA_FREQUENCY", String.valueOf(getAudioFreq()));
-        setEnv("LLA_IS_SET", "1");
+		int audioOptimalSmp = getAudioSMP();
+		while (audioOptimalSmp > 512) audioOptimalSmp >>= 1;
         handleIntent(this.getIntent());
 
         super.onCreate(savedInstanceState);
+        nativeSetenv("LLA_BUFSIZE", String.valueOf(audioOptimalSmp));
+        nativeSetenv("LLA_FREQUENCY", String.valueOf(getAudioFreq()));
+        nativeSetenv("LLA_IS_SET", "1");
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
     }
 

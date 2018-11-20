@@ -18,7 +18,6 @@
       android:icon="@drawable/love"
       android:label="LÖVE for Android"
       android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
-      <service android:name="org.love2d.android.DownloadService" />
       <activity
         android:name="org.love2d.android.GameActivity"
         android:configChanges="orientation|screenSize|keyboard|keyboardHidden|navigation"
