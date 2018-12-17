@@ -6,7 +6,7 @@ The changes are as follows:
 
 * Target Android API 26 (required for Play Store submission). Note that `t.externalstorage=true` still work even without runtime permission request.
 
-* Uses modified OpenAL-soft 1.16.0. File changed is `ALc/backends/opensl.c` to support lower audio latency. [This](https://github.com/kcat/openal-soft/commit/4b53d0e90cec08b4df06be22a9516f12ac5647f5) [patch](https://github.com/kcat/openal-soft/commit/4d19d4f416f39902f5bb08e822c262d571136aa6) also applied to fix compilation under Clang
+* Uses modified OpenAL-soft 1.16.0. File changed is `ALc/backends/opensl.c` to support lower audio latency. [This](https://github.com/kcat/openal-soft/commit/4b53d0e90cec08b4df06be22a9516f12ac5647f5) [patch](https://github.com/kcat/openal-soft/commit/4d19d4f416f39902f5bb08e822c262d571136aa6) [also](https://bugs.funtoo.org/browse/FL-2769) applied to fix compilation under Clang
 
 * Use LuaJIT 2.1.0-beta3
 

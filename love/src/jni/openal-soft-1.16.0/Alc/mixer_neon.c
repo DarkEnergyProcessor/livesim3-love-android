@@ -75,7 +75,7 @@ static inline void ApplyCoeffs(ALuint Offset, ALfloat (*restrict Values)[2],
 #undef SUFFIX
 
 
-void MixDirect_Neon(const ALfloat *data, ALuint OutChans, ALfloat (*restrict OutBuffer)[BUFFERSIZE],
+void Mix_Neon(const ALfloat *data, ALuint OutChans, ALfloat (*restrict OutBuffer)[BUFFERSIZE],
                     MixGains *Gains, ALuint Counter, ALuint OutPos, ALuint BufferSize)
 {
     ALfloat gain, step;
