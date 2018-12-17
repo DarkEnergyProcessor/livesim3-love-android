@@ -6,7 +6,7 @@ The changes are as follows:
 
 * Target Android API 26 (required for Play Store submission). Note that `t.externalstorage=true` still work even without runtime permission request.
 
-* Uses modified OpenAL-soft 1.19.1. File changed is `ALc/backends/opensl.c` to support lower audio latency.
+* Uses modified OpenAL-soft 1.16.0. File changed is `ALc/backends/opensl.c` to support lower audio latency. [This](https://github.com/kcat/openal-soft/commit/4b53d0e90cec08b4df06be22a9516f12ac5647f5) [patch](https://github.com/kcat/openal-soft/commit/4d19d4f416f39902f5bb08e822c262d571136aa6) also applied to fix compilation under Clang
 
 * Use LuaJIT 2.1.0-beta3
 
@@ -22,14 +22,21 @@ The changes are as follows:
 
 * Mount APK instead of `/sdcard/lovegame`
 
-LÖVE is licensed under zLib license, and **this is modified version of LOVE 0.10.2**
+LÖVE is licensed under zLib license, and **this is modified version of LOVE 0.10.2/11.2**
 
-OpenAL-soft is licensed under LGPL version 2 (or later version of the license), and **this is modified version of OpenAL-soft 1.19.1**
+OpenAL-soft is licensed under LGPL version 2 (or later version of the license), and **this is modified version of OpenAL-soft 1.16.0**
 
-Before start, make sure to clone the LOVE repository. It's now separated
+Before start, make sure to clone the submodules too.
 
-```
-git clone https://github.com/MikuAuahDark/livesim3-love love/src/jni/love
+Command-line used to build OpenAL-soft are as follows
+```cmd
+rem ARMv7
+cmake -G "NMake Makefiles" -DALSOFT_UTILS=0 -DALSOFT_EXAMPLES=0 -DALSOFT_NO_CONFIG_UTIL=0 -DCMAKE_INSTALL_PREFIX:PATH=%OMITTED_DIRECTORY%/als/output/armeabi-v7a -B%OMITTED_DIRECTORY%/als/build/armeabi-v7a -H%REPO%/love/src/jni/openal-soft-1.16.0 -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a -DCMAKE_SYSTEM_VERSION=14
+cmake --build %OMITTED_DIRECTORY%/als/build/armeabi-v7a --config RelWithDebInfo --target install
+
+rem ARMv8
+cmake -G "NMake Makefiles" -DALSOFT_UTILS=0 -DALSOFT_EXAMPLES=0 -DALSOFT_NO_CONFIG_UTIL=0 -DCMAKE_INSTALL_PREFIX:PATH=%OMITTED_DIRECTORY%/als/output/arm64-v8a -B%OMITTED_DIRECTORY%/als/build/arm64-v8a -H%REPO%/love/src/jni/openal-soft-1.16.0 -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a -DCMAKE_SYSTEM_VERSION=21
+cmake --build %OMITTED_DIRECTORY%/als/build/arm64-v8a --config RelWithDebInfo --target install
 ```
 
 *********************************************
