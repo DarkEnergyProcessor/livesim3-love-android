@@ -1,0 +1,3 @@
+[submodule "love/src/jni/love"]
+	path = love/src/jni/love
+	url = https://github.com/MikuAuahDark/livesim3-love

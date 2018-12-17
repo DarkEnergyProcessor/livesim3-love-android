@@ -26,6 +26,3 @@ local.properties
 # Gradle build files
 build
 .externalNativeBuild
-
-# LOVE repo
-love/src/jni/love
