@@ -6,11 +6,11 @@ android {
     // See https://code.google.com/p/android/issues/detail?id=52962
     // and http://stackoverflow.com/questions/27277433/why-does-gradle-build-my-module-in-release-mode-when-the-app-is-in-debug
     // defaultPublishConfig "debug"
-    compileSdkVersion 26
-    buildToolsVersion "28.0.3"
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
-        compileSdkVersion 26
+        compileSdkVersion 28
         buildToolsVersion "28.0.3"
         minSdkVersion 14
         externalNativeBuild {
@@ -45,14 +45,13 @@ android {
     lintOptions {
         abortOnError false
     }
-	packagingOptions {
-		// For some reason, since SDL 2.0.7, it always include libSDL2.so, but we don't need that
-		exclude 'lib/arm64-v8a/libSDL2.so'
-		exclude 'lib/armeabi-v7a/libSDL2.so'
-	}
+    packagingOptions {
+        exclude 'lib/arm64-v8a/libSDL2.so'
+        exclude 'lib/armeabi-v7a/libSDL2.so'
+    }
 }
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
-    api 'com.android.support:appcompat-v7:26+'
+    api 'androidx.appcompat:appcompat:1.1.0-alpha01'
 }

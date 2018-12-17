@@ -4,39 +4,26 @@ import org.libsdl.app.SDLActivity;
 
 import java.util.Arrays;
 import java.util.List;
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DownloadManager;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.PowerManager;
-import android.os.ResultReceiver;
 import android.os.Vibrator;
-import android.support.annotation.Keep;
-import android.support.v4.app.ActivityCompat;
+import androidx.annotation.Keep;
+import androidx.core.app.ActivityCompat;
 import android.util.Log;
 import android.util.DisplayMetrics;
-import android.widget.Toast;
 import android.view.*;
 import android.content.pm.PackageManager;
 
@@ -101,11 +88,11 @@ public class GameActivity extends SDLActivity {
             Log.d("GameActivity", "Vibration disabled: could not get vibration permission.");
         }
 
-		int audioOptimalSmp = getAudioSMP();
-		while (audioOptimalSmp > 512) audioOptimalSmp >>= 1;
         handleIntent(this.getIntent());
 
         super.onCreate(savedInstanceState);
+        int audioOptimalSmp = getAudioSMP();
+        while (audioOptimalSmp > 512) audioOptimalSmp >>= 1;
         nativeSetenv("LLA_BUFSIZE", String.valueOf(audioOptimalSmp));
         nativeSetenv("LLA_FREQUENCY", String.valueOf(getAudioFreq()));
         nativeSetenv("LLA_IS_SET", "1");
@@ -116,13 +103,9 @@ public class GameActivity extends SDLActivity {
     protected void onNewIntent(Intent intent) {
         Log.d("GameActivity", "onNewIntent() with " + intent);
         handleIntent(intent);
-        resetNative();
-        startNative();
     }
 
     protected void handleIntent(Intent intent) {
-        // Our fork doesn't need to handle this thing
-        /*
         Uri game = intent.getData();
 
         if (game != null) {
@@ -180,7 +163,6 @@ public class GameActivity extends SDLActivity {
         }
 
         Log.d("GameActivity", "new gamePath: " + gamePath);
-        */
     }
 
     protected void checkLovegameFolder() {
@@ -190,6 +172,8 @@ public class GameActivity extends SDLActivity {
             if ((new File(ext, "/lovegame/main.lua")).exists()) {
                 gamePath = ext.getPath() + "/lovegame/";
             }
+        } else {
+            Log.d("GameActivity", "Cannot load game from external storage: permission not granted");
         }
     }
 
@@ -274,8 +258,13 @@ public class GameActivity extends SDLActivity {
         GameActivity self = (GameActivity) mSingleton; // use SDL provided one
         Log.d("GameActivity", "called getGamePath(), game path = " + gamePath);
 
-        if (gamePath.length() > 0 && self.hasExternalStoragePermission()) {
-            return gamePath;
+        if (gamePath.length() > 0) {
+            if(self.hasExternalStoragePermission()) {
+                return gamePath;
+            } else {
+                Log.d("GameActivity", "cannot open game " + gamePath + ": no external storage permission given!");
+            }
+
         } else {
             self.checkLovegameFolder();
             if (gamePath.length() > 0)
@@ -370,47 +359,65 @@ public class GameActivity extends SDLActivity {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         return audioManager.isMusicActive();
     }
-    
+
+    public void showExternalStoragePermissionMissingDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mSingleton);
+
+        builder.setTitle ("Storage Permission Missing")
+                .setMessage("LÖVE for Android will not be able to run non-packaged games without storage permission.");
+
+        builder.setNeutralButton("Continue", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == EXTERNAL_STORAGE_REQUEST_CODE) {
-            synchronized (externalStorageRequestDummy) {
-                externalStorageRequestDummy[0] = grantResults[0];
-                externalStorageRequestDummy.notify();
-            }
+        if (grantResults.length > 0) {
+            Log.d("GameActivity", "Received a request permission result");
+
+            if (requestCode == EXTERNAL_STORAGE_REQUEST_CODE) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("GameActivity", "Permission granted");
+                } else {
+                    Log.d("GameActivity", "Did not get permission.");
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        showExternalStoragePermissionMissingDialog();
+                    }
+                }
+
+                Log.d("GameActivity", "Unlocking LÖVE thread");
+                synchronized (externalStorageRequestDummy) {
+                    externalStorageRequestDummy[0] = grantResults[0];
+                    externalStorageRequestDummy.notify();
+                }
+           }
         }
     }
 
     @Keep
     public boolean hasExternalStoragePermission() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ActivityCompat.requestPermissions(
-                            GameActivity.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            EXTERNAL_STORAGE_REQUEST_CODE
-                        );
-                    }
-                });
-
-                synchronized (externalStorageRequestDummy) {
-                    try {
-                        externalStorageRequestDummy.wait();
-                    } catch (InterruptedException e) {
-                        Log.d("GameActivity", "request external storage permission", e);
-                        return false;
-                    }
-
-                }
-                return ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-            }
-        } else
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
             return true;
-        return false;
+        }
+
+        Log.d("GameActivity", "Requesting permission and locking LÖVE thread until we have an answer.");
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXTERNAL_STORAGE_REQUEST_CODE);
+
+        synchronized (externalStorageRequestDummy) {
+            try {
+                externalStorageRequestDummy.wait();
+            } catch (InterruptedException e) {
+                Log.d("GameActivity", "requesting external storage permission", e);
+                return false;
+            }
+        }
+
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 }
