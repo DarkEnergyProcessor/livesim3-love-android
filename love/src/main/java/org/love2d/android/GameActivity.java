@@ -256,6 +256,7 @@ public class GameActivity extends SDLActivity {
     }
 
     public static String getGamePath() {
+		/*
         GameActivity self = (GameActivity) mSingleton; // use SDL provided one
         Log.d("GameActivity", "called getGamePath(), game path = " + gamePath);
 
@@ -270,7 +271,7 @@ public class GameActivity extends SDLActivity {
             self.checkLovegameFolder();
             if (gamePath.length() > 0)
                 return gamePath;
-        }
+        }*/
 
         return "";
     }
