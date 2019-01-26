@@ -8,7 +8,7 @@ LOCAL_CFLAGS    := -fexceptions -g -Dlinux -DHAVE_GCC_DESTRUCTOR=1 -DOPT_GENERIC
 LOCAL_CPPFLAGS  := ${LOCAL_CFLAGS}
 
 LOCAL_C_INCLUDES  :=  \
-	${LOCAL_PATH}/../libogg-1.3.2/include \
+	${LOCAL_PATH}/${OGG_INCLUDE_PATH} \
 	${LOCAL_PATH}/include
 		
 LOCAL_SRC_FILES := \

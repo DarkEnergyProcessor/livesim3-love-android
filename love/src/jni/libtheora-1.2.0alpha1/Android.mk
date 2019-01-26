@@ -11,7 +11,7 @@ LOCAL_C_INCLUDES  :=  \
 	${LOCAL_PATH}/include \
 	${LOCAL_PATh}/lib/arm \
 	${LOCAL_PATh}/lib \
-	${LOCAL_PATH}/../libogg-1.3.2/include
+	${LOCAL_PATH}/${OGG_INCLUDE_PATH}
 
 		
 LOCAL_SRC_FILES := \
