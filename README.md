@@ -1,4 +1,4 @@
-This is the source code of modified LÖVE 0.10.2 used for Android version of Live Simulator: 2 v3.0
+This is the Android "megasource" equivalent for modified LÖVE used for Live Simulator: 2 v3.0
 
 The changes are as follows:
 
@@ -7,6 +7,8 @@ The changes are as follows:
 * Target Android API 26 (required for Play Store submission). Note that `t.externalstorage=true` still work even without runtime permission request.
 
 * Uses modified OpenAL-soft 1.16.0. File changed is `ALc/backends/opensl.c` to support lower audio latency. [This](https://github.com/kcat/openal-soft/commit/4b53d0e90cec08b4df06be22a9516f12ac5647f5) [patch](https://github.com/kcat/openal-soft/commit/4d19d4f416f39902f5bb08e822c262d571136aa6) [also](https://bugs.funtoo.org/browse/FL-2769) applied to fix compilation under Clang
+
+* Force ARM NEON support and refuse to run for processor that doesn't supports it.
 
 * Use LuaJIT 2.1.0-beta3
 
@@ -31,7 +33,7 @@ Before start, make sure to clone the submodules too.
 Command-line used to build OpenAL-soft are as follows
 ```cmd
 rem ARMv7
-cmake -G "NMake Makefiles" -DALSOFT_UTILS=0 -DALSOFT_EXAMPLES=0 -DALSOFT_NO_CONFIG_UTIL=0 -DCMAKE_INSTALL_PREFIX:PATH=%OMITTED_DIRECTORY%/als/output/armeabi-v7a -B%OMITTED_DIRECTORY%/als/build/armeabi-v7a -H%REPO%/love/src/jni/openal-soft-1.16.0 -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a -DCMAKE_SYSTEM_VERSION=14
+cmake -G "NMake Makefiles" -DCMAKE_ANDROID_ARM_NEON=1 -DALSOFT_REQUIRE_NEON=1 -DALSOFT_UTILS=0 -DALSOFT_EXAMPLES=0 -DALSOFT_NO_CONFIG_UTIL=0 -DCMAKE_INSTALL_PREFIX:PATH=D:/Data/Dev/love-0.10.2/livesim3-android/als/output/armeabi-v7a -Bals/build/armeabi-v7a -Hlove-android-sdl2/love/src/jni/openal-soft-1.16.0 -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a -DCMAKE_SYSTEM_VERSION=14
 cmake --build %OMITTED_DIRECTORY%/als/build/armeabi-v7a --config RelWithDebInfo --target install
 
 rem ARMv8
