@@ -1,5 +1,7 @@
 This is the Android "megasource" equivalent for modified LÖVE used for Live Simulator: 2 v3.0
 
+![Build Status](https://travis-ci.com/MikuAuahDark/livesim3-love-android.svg?branch=master)
+
 The changes are as follows:
 
 * Targets `armeabi-v7a` and `arm64-v8a` (`arm64-v8a` is required for Play Store submission)

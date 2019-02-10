@@ -1,0 +1,19 @@
+language: android
+sudo: required
+
+android:
+  components:
+  - tools
+  - platform-tools
+  - android-28
+  - extra-google-m2repository
+  - extra-android-m2repository
+
+install:
+  - echo y | sdkmanager "ndk-bundle"
+
+before_script:
+  - export ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle
+
+script:
+  - gradle assemble --no-daemon
