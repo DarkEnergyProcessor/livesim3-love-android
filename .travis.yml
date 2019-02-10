@@ -17,4 +17,4 @@ before_script:
   - export ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle
 
 script:
-  - gradle assemble --no-daemon
+  - bash ./gradlew assembleRelease --no-daemon
