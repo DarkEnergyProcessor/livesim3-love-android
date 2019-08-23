@@ -32,6 +32,7 @@ public class GameActivity extends SDLActivity {
     private static String gamePath = "";
     private static Context context;
     private static Vibrator vibrator = null;
+    private static int DEFAULT_SMP = 256;
     protected final int[] externalStorageRequestDummy = new int[1];
     public static final int EXTERNAL_STORAGE_REQUEST_CODE = 1;
     private static boolean immersiveActive = false;
@@ -44,15 +45,29 @@ public class GameActivity extends SDLActivity {
     @Override
     protected String[] getLibraries() {
         return new String[]{
-                "c++_shared",
-                "mpg123",
-                "openal",
-                "hidapi",
-                "love",
+            "c++_shared",
+            "openal",
+            "hidapi",
+            "love",
         };
     }
-    
-    private static int DEFAULT_SMP = 256;
+
+    @Override
+    protected String getMainSharedObject() {
+        String[] libs = getLibraries();
+        String libname = "lib" + libs[libs.length - 1] + ".so";
+
+        // Since Lollipop, you can simply pass "libname.so" to dlopen
+        // and it will resolve correct paths and load correct library.
+        // This is mandatory for extractNativeLibs=false support in
+        // Marshmallow.
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            return libname;
+        } else {
+            return getContext().getApplicationInfo().nativeLibraryDir + "/" + libname;
+        }
+    }
+
     @Keep
     public int getAudioSMP()
     {
@@ -276,7 +291,7 @@ public class GameActivity extends SDLActivity {
     }
 
     public static String getGamePath() {
-		/*
+        /*
         GameActivity self = (GameActivity) mSingleton; // use SDL provided one
         Log.d("GameActivity", "called getGamePath(), game path = " + gamePath);
 
