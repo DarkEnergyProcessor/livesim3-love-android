@@ -9,6 +9,3 @@
 *.dmp
 *.swp
 .tags
-
-!android/*/*.so
-!android/*/*.a
