@@ -7,7 +7,7 @@
 # Also works with MinGW and Cygwin on Windows.
 # Please check msvcbuild.bat for building with MSVC on Windows.
 #
-# Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+# Copyright (C) 2005-2020 Mike Pall. See Copyright Notice in luajit.h
 ##############################################################################
 
 MAJVER=  2
@@ -311,7 +311,6 @@ ifeq (Windows,$(TARGET_SYS))
   TARGET_STRIP+= --strip-unneeded
   TARGET_XSHLDFLAGS= -shared -Wl,--out-implib,$(TARGET_DLLDOTANAME)
   TARGET_DYNXLDOPTS=
-  HOST_RM= del
 else
   TARGET_AR+= 2>/dev/null
 ifeq (,$(shell $(TARGET_CC) -o /dev/null -c -x c /dev/null -fno-stack-protector 2>/dev/null || echo 1))
@@ -445,6 +444,9 @@ ifeq (arm,$(TARGET_LJARCH))
     DASM_AFLAGS+= -D IOS
   endif
 else
+ifneq (,$(findstring LJ_TARGET_MIPSR6 ,$(TARGET_TESTARCH)))
+  DASM_AFLAGS+= -D MIPSR6
+endif
 ifeq (ppc,$(TARGET_LJARCH))
   ifneq (,$(findstring LJ_ARCH_SQRT 1,$(TARGET_TESTARCH)))
     DASM_AFLAGS+= -D SQRT
@@ -457,9 +459,6 @@ ifeq (ppc,$(TARGET_LJARCH))
   endif
   ifeq (PS3,$(TARGET_SYS))
     DASM_AFLAGS+= -D PPE -D TOC
-  endif
-  ifneq (,$(findstring LJ_ARCH_PPC64 ,$(TARGET_TESTARCH)))
-    DASM_ARCH= ppc64
   endif
 endif
 endif
@@ -563,6 +562,7 @@ ifeq (Windows,$(HOST_SYS))
     MINILUA_X= host\minilua
     BUILDVM_X= host\buildvm
     ALL_RM:= $(subst /,\,$(ALL_RM))
+    HOST_RM= del
   endif
 endif
 
@@ -603,7 +603,6 @@ E= @echo
 default all:	$(TARGET_T)
 
 amalg:
-	@grep "^[+|]" ljamalg.c
 	$(MAKE) all "LJCORE_O=ljamalg.o"
 
 clean:
