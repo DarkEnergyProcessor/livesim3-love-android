@@ -34,7 +34,7 @@ public class GameActivity extends SDLActivity {
     private static Vibrator vibrator = null;
     private static int DEFAULT_SMP = 256;
     protected final int[] externalStorageRequestDummy = new int[1];
-    public static final int EXTERNAL_STORAGE_REQUEST_CODE = 1;
+    public static final int EXTERNAL_STORAGE_REQUEST_CODE = 2;
     private static boolean immersiveActive = false;
     private static boolean mustCacheArchive = false;
     private boolean shortEdgesMode = false;
