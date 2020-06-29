@@ -616,7 +616,7 @@ static void LJ_FASTCALL recff_math_random(jit_State *J, RecordFFData *rd)
   GCudata *ud = udataV(&J->fn->c.upvalue[0]);
   TRef tr, one;
   lj_ir_kgc(J, obj2gco(ud), IRT_UDATA);  /* Prevent collection. */
-  tr = lj_ir_call(J, IRCALL_lj_math_random_step, lj_ir_kptr(J, uddata(ud)));
+  tr = lj_ir_call(J, IRCALL_lj_prng_u64d, lj_ir_kptr(J, uddata(ud)));
   one = lj_ir_knum_one(J);
   tr = emitir(IRTN(IR_SUB), tr, one);
   if (J->base[0]) {
@@ -1086,13 +1086,7 @@ static TRef recff_io_fp(jit_State *J, TRef *udp, int32_t id)
 {
   TRef tr, ud, fp;
   if (id) {  /* io.func() */
-#if LJ_GC64
-    /* TODO: fix ARM32 asm_fload(), so we can use this for all archs. */
     ud = lj_ir_ggfload(J, IRT_UDATA, GG_OFS(g.gcroot[id]));
-#else
-    tr = lj_ir_kptr(J, &J2G(J)->gcroot[id]);
-    ud = emitir(IRT(IR_XLOAD, IRT_UDATA), tr, 0);
-#endif
   } else {  /* fp:method() */
     ud = J->base[0];
     if (!tref_isudata(ud))
