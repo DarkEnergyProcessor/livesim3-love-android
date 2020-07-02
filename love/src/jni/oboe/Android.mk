@@ -19,7 +19,7 @@ LOCAL_CPPFLAGS := -std=c++14
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include \
 	$(LOCAL_PATH)/src
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/src
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include
 
 #
 # Source files

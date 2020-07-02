@@ -4,6 +4,8 @@
 
 #include "oboe/Oboe.h"
 
+extern "C"
+{
 JNIEXPORT void JNICALL
 Java_org_love2d_android_GameActivity_nativeSetDefaultStreamValues(
     JNIEnv *env,
@@ -13,4 +15,5 @@ Java_org_love2d_android_GameActivity_nativeSetDefaultStreamValues(
 ) {
     oboe::DefaultStreamValues::SampleRate = (int32_t) sampleRate;
     oboe::DefaultStreamValues::FramesPerBurst = (int32_t) framesPerBurst;
+}
 }

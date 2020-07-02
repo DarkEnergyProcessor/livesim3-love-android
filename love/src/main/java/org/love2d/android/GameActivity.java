@@ -32,7 +32,6 @@ public class GameActivity extends SDLActivity {
     private static String gamePath = "";
     private static Context context;
     private static Vibrator vibrator = null;
-    private static int DEFAULT_SMP = 256;
     protected final int[] externalStorageRequestDummy = new int[1];
     public static final int EXTERNAL_STORAGE_REQUEST_CODE = 2;
     private static boolean immersiveActive = false;
@@ -42,6 +41,8 @@ public class GameActivity extends SDLActivity {
     public int safeAreaLeft = 0;
     public int safeAreaBottom = 0;
     public int safeAreaRight = 0;
+
+    private native void nativeSetDefaultStreamValues(int defaultSampleRate, int defaultFramesPerBurst);
 
     @Override
     protected String[] getLibraries() {
@@ -69,7 +70,7 @@ public class GameActivity extends SDLActivity {
         }
     }
 
-    @Keep
+    private static int DEFAULT_SMP = 256;
     public int getAudioSMP()
     {
         if (android.os.Build.VERSION.SDK_INT >= 17)
@@ -82,7 +83,6 @@ public class GameActivity extends SDLActivity {
     }
 
     private static int DEFAULT_FREQ = 44100;
-    @Keep
     public int getAudioFreq()
     {
         if (android.os.Build.VERSION.SDK_INT >= 17)
@@ -111,11 +111,10 @@ public class GameActivity extends SDLActivity {
         handleIntent(this.getIntent());
 
         super.onCreate(savedInstanceState);
-        int audioOptimalSmp = getAudioSMP();
-        while (audioOptimalSmp > 512) audioOptimalSmp >>= 1;
-        nativeSetenv("LLA_BUFSIZE", String.valueOf(audioOptimalSmp));
-        nativeSetenv("LLA_FREQUENCY", String.valueOf(getAudioFreq()));
-        nativeSetenv("LLA_IS_SET", "1");
+
+        // Send low latency audio values
+        nativeSetDefaultStreamValues(getAudioFreq(), getAudioSMP());
+
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         if (android.os.Build.VERSION.SDK_INT >= 28) {

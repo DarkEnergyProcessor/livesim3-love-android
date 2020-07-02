@@ -12,7 +12,7 @@ LOCAL_ARM_NEON := true
 #
 # Flags
 #
-LOCAL_CFLAGS := -std=c11 -DAL_ALEXT_PROTOTYPES -DHAVE_OBOE -DHAVE_OPENSL -DHAVE_DLFCN_H
+LOCAL_CFLAGS := -std=c11 -DAL_ALEXT_PROTOTYPES -DHAVE_OBOE -DHAVE_OPENSL
 LOCAL_CPPFLAGS := -std=c++14
 LOCAL_CPP_FEATURES := exceptions
 
@@ -156,8 +156,9 @@ LOCAL_SRC_FILES += \
     alc/backends/base.cpp \
     alc/backends/loopback.cpp \
     alc/backends/null.cpp \
-    alc/backends/opensl.cpp \
     alc/backends/oboe.cpp \
+    alc/backends/opensl.cpp \
+	alc/backends/wave.cpp
 
 #
 # OpenSL latency setter HACK
