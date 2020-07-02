@@ -20,48 +20,48 @@ LOCAL_CPP_FEATURES := exceptions
 # Include directories
 #
 LOCAL_C_INCLUDES := \
-	$(LOCAL_PATH) \
-	$(LOCAL_PATH)/alc \
-	$(LOCAL_PATH)/common \
-	$(LOCAL_PATH)/include
+    $(LOCAL_PATH) \
+    $(LOCAL_PATH)/alc \
+    $(LOCAL_PATH)/common \
+    $(LOCAL_PATH)/include
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include
 
 #
 # config.h defines
 #
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
-	# Defines for ARM32
-	LOCAL_CFLAGS += \
-		-DHAVE_NEON \
-		-DSIZEOF_LONG=4
+    # Defines for ARM32
+    LOCAL_CFLAGS += \
+        -DHAVE_NEON \
+        -DSIZEOF_LONG=4
 else ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-	# Defines for ARM64
-	LOCAL_CFLAGS += \
-		-DHAVE_POSIX_MEMALIGN \
-		-DHAVE_NEON \
-		-DSIZEOF_LONG=8
+    # Defines for ARM64
+    LOCAL_CFLAGS += \
+        -DHAVE_POSIX_MEMALIGN \
+        -DHAVE_NEON \
+        -DSIZEOF_LONG=8
 else ifeq ($(TARGET_ARCH_ABI),x86)
-	# Defines for x86. UNTESTED!
-	LOCAL_CFLAGS += \
-		-DHAVE_SSE \
-		-DHAVE_SSE2 \
-		-DHAVE_SSE3 \
-		-DSIZEOF_LONG=4 \
-		-DHAVE_CPUID_H \
-		-DHAVE_GCC_GET_CPUID \
-		-DHAVE_SSE_INTRINSICS
+    # Defines for x86. UNTESTED!
+    LOCAL_CFLAGS += \
+        -DHAVE_SSE \
+        -DHAVE_SSE2 \
+        -DHAVE_SSE3 \
+        -DSIZEOF_LONG=4 \
+        -DHAVE_CPUID_H \
+        -DHAVE_GCC_GET_CPUID \
+        -DHAVE_SSE_INTRINSICS
 else ifeq ($(TARGET_ARCH_ABI),x86_64)
-	# Defines for x86-64. UNTESTED!
-	LOCAL_CFLAGS += \
-		-DHAVE_POSIX_MEMALIGN \
-		-DHAVE_SSE \
-		-DHAVE_SSE2 \
-		-DHAVE_SSE3 \
-		-DHAVE_SSE4_1 \
-		-DSIZEOF_LONG=8 \
-		-DHAVE_CPUID_H \
-		-DHAVE_GCC_GET_CPUID \
-		-DHAVE_SSE_INTRINSICS
+    # Defines for x86-64. UNTESTED!
+    LOCAL_CFLAGS += \
+        -DHAVE_POSIX_MEMALIGN \
+        -DHAVE_SSE \
+        -DHAVE_SSE2 \
+        -DHAVE_SSE3 \
+        -DHAVE_SSE4_1 \
+        -DSIZEOF_LONG=8 \
+        -DHAVE_CPUID_H \
+        -DHAVE_GCC_GET_CPUID \
+        -DHAVE_SSE_INTRINSICS
 endif
 
 #
@@ -127,26 +127,26 @@ LOCAL_SRC_FILES := \
 # Conditionals source files
 #
 ifneq (,$(findstring HAVE_SSE4_1,${LOCAL_CFLAGS}))
-	# SSE4.1 mixer
-	LOCAL_SRC_FILES += \
-		alc/mixer/mixer_sse.cpp \
-		alc/mixer/mixer_sse2.cpp \
-		alc/mixer/mixer_sse3.cpp \
-		alc/mixer/mixer_sse41.cpp
+    # SSE4.1 mixer
+    LOCAL_SRC_FILES += \
+        alc/mixer/mixer_sse.cpp \
+        alc/mixer/mixer_sse2.cpp \
+        alc/mixer/mixer_sse3.cpp \
+        alc/mixer/mixer_sse41.cpp
 else ifneq (,$(findstring HAVE_SSE3,${LOCAL_CFLAGS}))
-	# SSE3 mixer
-	LOCAL_SRC_FILES += \
-		alc/mixer/mixer_sse.cpp \
-		alc/mixer/mixer_sse2.cpp \
-		alc/mixer/mixer_sse3.cpp
+    # SSE3 mixer
+    LOCAL_SRC_FILES += \
+        alc/mixer/mixer_sse.cpp \
+        alc/mixer/mixer_sse2.cpp \
+        alc/mixer/mixer_sse3.cpp
 else ifneq (,$(findstring HAVE_SSE2,${LOCAL_CFLAGS}))
-	# SSE2 mixer
-	LOCAL_SRC_FILES += \
-		alc/mixer/mixer_sse.cpp \
-		alc/mixer/mixer_sse2.cpp
+    # SSE2 mixer
+    LOCAL_SRC_FILES += \
+        alc/mixer/mixer_sse.cpp \
+        alc/mixer/mixer_sse2.cpp
 else ifneq (,$(findstring HAVE_NEON,${LOCAL_CFLAGS}))
-	# NEON mixer
-	LOCAL_SRC_FILES += alc/mixer/mixer_neon.cpp
+    # NEON mixer
+    LOCAL_SRC_FILES += alc/mixer/mixer_neon.cpp
 endif
 
 #
@@ -156,8 +156,13 @@ LOCAL_SRC_FILES += \
     alc/backends/base.cpp \
     alc/backends/loopback.cpp \
     alc/backends/null.cpp \
-	alc/backends/opensl.cpp \
-	alc/backends/oboe.cpp
+    alc/backends/opensl.cpp \
+    alc/backends/oboe.cpp \
+
+#
+# OpenSL latency setter HACK
+#
+LOCAL_SRC_FILES += opensl_latency.cpp
 
 #
 # Libraries related
