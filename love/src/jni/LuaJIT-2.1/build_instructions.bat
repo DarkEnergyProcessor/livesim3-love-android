@@ -2,8 +2,7 @@ rem Build instruction assume using WSL + Clang for Windows (with MSVC x86+x64 to
 rem This assume NDK r19 or later. See https://github.com/LuaJIT/LuaJIT/issues/477 for more information.
 
 rem Make sure LuaJIT and the prebuilt is already in your PATH environment variable.
-rem Also make sure lj_ircall.h.patch is applied to src/lj_ircall.h. In this repo, the patch has been
-rem applied. However if you updated LuaJIT from the latest v2.1 branch, you may need to reapply it.
+rem As of commit 384d6d5 in LuaJIT v2.1 repository, lj_ircall.h.patch is no longer needed.
 
 rem If you're confused which one should be added your path:
 rem <NDK_ROOT>\toolchains\llvm\prebuilt\windows-x86_64\bin
