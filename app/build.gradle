@@ -5,9 +5,9 @@ android {
     buildToolsVersion '31.0.0'
     ndkVersion '21.3.6528147'
     defaultConfig {
-        applicationId 'org.love2d.android'
-        versionCode 30
-        versionName '11.4'
+        applicationId 'com.npdep.livesim2'
+        versionCode 03030201
+        versionName '4.0.0-beta5'
         minSdkVersion 16
         targetSdkVersion 31
     }

@@ -17,29 +17,19 @@ jobs:
         java-version: 11
         cache: gradle
     - name: Build
-      run: bash ./gradlew assembleNormalRecord assembleEmbedRelease bundleNormalNoRecordRelease bundleEmbedRecordRelease bundleEmbedNoRecordRelease
-    - name: Artifact (Normal debug APK)
+      run: bash ./gradlew assembleEmbedNoRecordRelease assembleEmbedNoRecordDebug bundleEmbedNoRecordRelease
+    - name: Artifact (Debug APK)
       uses: actions/upload-artifact@v2
       with:
-        name: love-android-debug.apk
-        path: app/build/outputs/apk/normalRecord/debug/app-normal-record-debug.apk
-    - name: Artifact (Normal unsigned APK)
+        name: ls2.apk
+        path: app/build/outputs/apk/embedNoRecord/debug/app-embed-noRecord-debug.apk
+    - name: Artifact (Unsigned APK)
       uses: actions/upload-artifact@v2
       with:
-        name: love-android.apk
-        path: app/build/outputs/apk/normalRecord/release/app-normal-record-release-unsigned.apk
-    - name: Artifact (Normal AAB w/o recording)
+        name: ls2-unsigned.apk
+        path: app/build/outputs/apk/embedNoRecord/release/app-embed-noRecord-release-unsigned.apk
+    - name: Artifact (AAB)
       uses: actions/upload-artifact@v2
       with:
-        name: love-android-ps.aab
-        path: app/build/outputs/bundle/normalNoRecordRelease/app-normal-noRecord-release.aab
-    - name: Artifact (Embed AAB)
-      uses: actions/upload-artifact@v2
-      with:
-        name: love-android-embed-record.aab
-        path: app/build/outputs/bundle/embedRecordRelease/app-embed-record-release.aab
-    - name: Artifact (Embed AAB w/o recording)
-      uses: actions/upload-artifact@v2
-      with:
-        name: love-android-embed.aab
-        path: app/build/outputs/bundle/embedNoRecordRelease/app-embed-noRecord-release.aab
+        name: ls2.aab
+        path: app/build/outputs/bundle/embedRecordRelease/app-embed-noRecord-release.aab
