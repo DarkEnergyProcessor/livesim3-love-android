@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2006-2022 LOVE Development Team
+ * Copyright (c) 2006-2023 LOVE Development Team
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
@@ -608,13 +608,12 @@ public class GameActivity extends SDLActivity {
 
     public boolean isNativeLibsExtracted() {
         ApplicationInfo appInfo = getApplicationInfo();
-        boolean nativeLibsExtracted = true;
 
         if (android.os.Build.VERSION.SDK_INT >= 23) {
-            nativeLibsExtracted = (appInfo.flags & ApplicationInfo.FLAG_EXTRACT_NATIVE_LIBS) != 0;
+            return (appInfo.flags & ApplicationInfo.FLAG_EXTRACT_NATIVE_LIBS) != 0;
         }
 
-        return nativeLibsExtracted;
+        return true;
     }
 
     @Keep

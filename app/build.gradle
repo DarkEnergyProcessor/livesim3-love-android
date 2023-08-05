@@ -1,15 +1,42 @@
+import java.nio.charset.StandardCharsets
+
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion '31.0.0'
-    ndkVersion '21.3.6528147'
+    namespace "org.love2d.android.executable"
+    compileSdk 33
+    buildToolsVersion '33.0.0'
+    ndkVersion '23.2.8568313'
     defaultConfig {
-        applicationId 'com.npdep.livesim2'
-        versionCode 03030201
-        versionName '4.0.0-beta5'
+        applicationId project.properties["app.application_id"]
+        versionCode project.properties["app.version_code"].toInteger()
+        versionName project.properties["app.version_name"]
         minSdkVersion 16
-        targetSdkVersion 31
+        targetSdk 33
+        
+        def getAppName = {
+            def nameArray = project.properties["app.name_byte_array"]
+            def name = project.properties["app.name"]
+            if (name != null && nameArray != null) {
+                throw new Exception("Only define either `app.name` or `app.name_byte_array` in gradle.properties, but not both!")
+            }
+
+            if (name == null) {
+                def nameArraySplit = nameArray.split(",")
+                def nameBytes = new byte[nameArraySplit.length]
+                def count = 0
+                for (String s: nameArraySplit) {
+                    nameBytes[count++] = (byte) Integer.parseInt(s)
+                }
+                return new String(nameBytes, StandardCharsets.UTF_8)
+            }
+            return name
+        }
+
+        manifestPlaceholders = [
+            NAME:getAppName(),
+            ORIENTATION:project.properties["app.orientation"],
+        ]
     }
     buildTypes {
         release {
@@ -32,7 +59,7 @@ android {
             dimension 'recording'
         }
     }
-    lintOptions {
+    lint {
         abortOnError false
     }
 }
@@ -40,6 +67,6 @@ android {
 dependencies {
     api 'androidx.multidex:multidex:2.0.1'
     api fileTree(dir: 'libs', include: ['*.jar'])
-    api 'androidx.appcompat:appcompat:1.4.0'
+    api 'androidx.appcompat:appcompat:1.6.1'
     api project(':love')
 }
