@@ -142,7 +142,6 @@
 #define SIZEOF_VOIDP 4
 #endif
 
-/* Enable various audio drivers */
 /* love2d-mod: Audio is handled by OpenAL */
 #define SDL_AUDIO_DRIVER_ANDROID    0
 #define SDL_AUDIO_DRIVER_OPENSLES   0

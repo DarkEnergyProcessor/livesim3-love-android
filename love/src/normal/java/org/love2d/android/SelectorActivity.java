@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2006-2023 LOVE Development Team
+ * Copyright (c) 2006-2024 LOVE Development Team
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
@@ -41,15 +41,17 @@ public class SelectorActivity extends AppCompatActivity {
         if (android.os.Build.VERSION.SDK_INT < 19) {
             Toast.makeText(this, "This activity does not work on Android before KitKat!", Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
 
         final ActivityResultLauncher<String[]> openFileLauncher = registerForActivityResult(
             new ActivityResultContracts.OpenDocument(),
             (Uri result) -> {
                 if (result != null) {
+
                     Intent intent = new Intent(SelectorActivity.this, GameActivity.class);
                     intent.setData(result);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     startActivity(intent);
                 }
 
