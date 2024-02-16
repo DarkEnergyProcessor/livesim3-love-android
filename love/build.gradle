@@ -81,6 +81,7 @@ android {
             java {
                 srcDir 'src/jni/SDL2/android-project/app/src/main/java'
                 srcDir 'src/main/java'
+                srcDir 'src/jni/love/src/libraries/luahttps/src/android/java'
                 srcDirs += retrieveAll3pModules()
             }
         }
